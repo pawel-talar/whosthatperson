@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "dev:workers": "npm run build && npx wrangler dev",
-    "d1:apply": "npx wrangler d1 migrations apply whosthatperson",
+    "d1:apply": "npx wrangler d1 migrations apply whosthatperson --remote",
     "d1:apply:local": "npx wrangler d1 migrations apply whosthatperson --local",
     "postbuild": "node ./scripts/copy-assetsignore.mjs",
     "preview": "astro preview",
