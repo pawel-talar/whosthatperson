@@ -1,0 +1,45 @@
+---
+import "../styles/global.css";
+import GameShell from "../components/GameShell";
+---
+
+<html lang="pl">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Who's That Person?</title>
+	</head>
+	<body class="min-h-screen bg-slate-950 text-slate-100">
+		<header class="border-b border-slate-800/60 bg-slate-950/80">
+			<div class="mx-auto flex w-full max-w-4xl items-center px-6 py-4">
+				<a
+					href="/"
+					class="brand-logo text-2xl tracking-wide text-emerald-200 transition hover:text-emerald-100"
+				>
+					Who's that person?
+				</a>
+			</div>
+		</header>
+		<main class="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6 py-10">
+			<header class="flex flex-col gap-2">
+				<p class="text-sm uppercase tracking-[0.3em] text-slate-400">Who's That Person?</p>
+				<h1 class="text-3xl font-semibold sm:text-4xl">Zgadnij postać po podpowiedziach</h1>
+				<p class="text-slate-300">
+					Prosta gra quizowa — zgaduj znane osoby na podstawie kolejnych podpowiedzi.
+				</p>
+			</header>
+			<section class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-xl">
+				<GameShell client:load />
+			</section>
+		</main>
+	</body>
+</html>

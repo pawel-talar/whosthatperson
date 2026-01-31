@@ -1,0 +1,9 @@
+{
+  "name": "whosthatperson",
+  "compatibility_date": "2026-01-31",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./dist/_worker.js",
+  "assets": {
+    "directory": "./dist"
+  }
+}
