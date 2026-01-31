@@ -1,5 +1,4 @@
-﻿import { mockPersons } from "../data/mockPersons";
-import type { Person } from "../types/person";
+import { maskName } from "../utils/maskName";
 
 type RoundStatus = "lobby" | "playing" | "roundEnd";
 
@@ -20,13 +19,29 @@ type Guess = {
   points: number;
 };
 
+type PersonRow = {
+  id: string;
+  name: string;
+  category: string;
+  occupation: string;
+  hints: string;
+};
+
+type PersonData = {
+  id: string;
+  name: string;
+  category: string;
+  occupation: string;
+  hints: string[];
+};
+
 type RoomState = {
   id: string;
   hostId: string | null;
   hostKey: string;
   players: Record<string, Player>;
   roundStatus: RoundStatus;
-  currentPersonId: string | null;
+  currentPerson: PersonData | null;
   visibleHints: number;
   guesses: Guess[];
   roundStartTime: number | null;
@@ -68,27 +83,23 @@ type StoredState = {
 
 const createId = () => Math.random().toString(36).slice(2, 8);
 
-const shuffle = <T>(items: T[]) => {
-  const array = [...items];
-  for (let i = array.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-};
-
-const getPersonById = (id: string | null) => {
-  if (!id) return null;
-  return mockPersons.find((person) => person.id === id) ?? null;
-};
+const mapRow = (row: PersonRow): PersonData => ({
+  id: row.id,
+  name: row.name,
+  category: row.category,
+  occupation: row.occupation,
+  hints: [maskName(row.name), ...(JSON.parse(row.hints) as string[])]
+});
 
 export class RoomDurableObject {
   private state: DurableObjectState;
+  private env: Env;
   private room: RoomState | null = null;
   private sockets = new Map<WebSocket, string>();
 
-  constructor(state: DurableObjectState) {
+  constructor(state: DurableObjectState, env: Env) {
     this.state = state;
+    this.env = env;
   }
 
   async fetch(request: Request): Promise<Response> {
@@ -112,6 +123,10 @@ export class RoomDurableObject {
     return new Response("Not found", { status: 404 });
   }
 
+  private getDb() {
+    return this.env?.DB;
+  }
+
   private async loadState() {
     if (this.room) return;
     const stored = (await this.state.storage.get<StoredState>("state")) ?? {
@@ -124,9 +139,33 @@ export class RoomDurableObject {
     await this.state.storage.put("state", { room: this.room });
   }
 
+  private async loadPersonById(id: string | null) {
+    if (!id) return null;
+    const db = this.getDb();
+    if (!db) return null;
+    const row = (await db
+      .prepare("SELECT id, name, category, occupation, hints FROM persons WHERE id = ?1")
+      .bind(id)
+      .first()) as PersonRow | null;
+    if (!row) return null;
+    return mapRow(row);
+  }
+
+  private async loadQuizIds(totalRounds: number) {
+    const db = this.getDb();
+    if (!db) return [];
+    const result = await db
+      .prepare(
+        "SELECT id FROM persons WHERE category = ?1 ORDER BY RANDOM() LIMIT ?2"
+      )
+      .bind("Testowa", totalRounds)
+      .all<{ id: string }>();
+    return (result.results ?? []).map((row) => row.id);
+  }
+
   private toPublic(): RoomPublic {
     const room = this.room as RoomState;
-    const person = getPersonById(room.currentPersonId);
+    const person = room.currentPerson;
     const hints = person ? person.hints.slice(0, room.visibleHints) : [];
     const gameOver = room.roundStatus === "roundEnd" && room.remainingPersonIds.length === 0;
     const currentRound = Math.min(
@@ -178,7 +217,7 @@ export class RoomDurableObject {
     const elapsed = (Date.now() - this.room.roundStartTime) / 1000;
     if (elapsed < this.room.roundDurationSec) return;
 
-    const person = getPersonById(this.room.currentPersonId);
+    const person = this.room.currentPerson;
     this.room.roundStatus = "roundEnd";
     this.room.revealedName = person?.name ?? null;
     this.room.nextHintAt = null;
@@ -233,10 +272,13 @@ export class RoomDurableObject {
       });
     }
 
-    const quizIds = shuffle(mockPersons)
-      .filter((person) => person.category === "Testowa")
-      .slice(0, totalRounds)
-      .map((person) => person.id);
+    const quizIds = await this.loadQuizIds(totalRounds);
+    if (quizIds.length === 0) {
+      return new Response(JSON.stringify({ error: "No persons found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
 
     this.room = {
       id: roomId,
@@ -244,7 +286,7 @@ export class RoomDurableObject {
       hostKey,
       players: {},
       roundStatus: "lobby",
-      currentPersonId: null,
+      currentPerson: null,
       visibleHints: 1,
       guesses: [],
       roundStartTime: null,
@@ -379,12 +421,12 @@ export class RoomDurableObject {
       if (!allReady) return;
       if (this.room.roundStatus === "playing") return;
 
-      if (!this.room.currentPersonId) {
-        this.room.currentPersonId = this.room.remainingPersonIds.shift() ?? null;
-      }
-      const startPerson = getPersonById(this.room.currentPersonId);
-      if (startPerson) {
-        this.room.roundHistory.push({ id: startPerson.id, name: startPerson.name });
+      if (!this.room.currentPerson) {
+        const nextId = this.room.remainingPersonIds.shift() ?? null;
+        const nextPerson = await this.loadPersonById(nextId);
+        if (!nextPerson) return;
+        this.room.currentPerson = nextPerson;
+        this.room.roundHistory.push({ id: nextPerson.id, name: nextPerson.name });
       }
       this.room.roundStatus = "playing";
       this.room.visibleHints = 1;
@@ -403,7 +445,7 @@ export class RoomDurableObject {
       const answer = payload.answer?.toString().trim();
       if (!answer || this.room.roundStatus !== "playing") return;
 
-      const person = getPersonById(this.room.currentPersonId);
+      const person = this.room.currentPerson;
       if (!person || !this.room.roundStartTime) return;
 
       const elapsedMs = Date.now() - this.room.roundStartTime;
@@ -455,16 +497,16 @@ export class RoomDurableObject {
       if (this.room.remainingPersonIds.length === 0) return;
 
       this.checkRoundTimeout();
-      const person = getPersonById(this.room.currentPersonId);
+      const person = this.room.currentPerson;
       this.room.roundStatus = "roundEnd";
       this.room.revealedName = person?.name ?? null;
-      this.room.currentPersonId = null;
+      this.room.currentPerson = null;
 
-      this.room.currentPersonId = this.room.remainingPersonIds.shift() ?? null;
-      const nextPerson = getPersonById(this.room.currentPersonId);
-      if (nextPerson) {
-        this.room.roundHistory.push({ id: nextPerson.id, name: nextPerson.name });
-      }
+      const nextId = this.room.remainingPersonIds.shift() ?? null;
+      const nextPerson = await this.loadPersonById(nextId);
+      if (!nextPerson) return;
+      this.room.currentPerson = nextPerson;
+      this.room.roundHistory.push({ id: nextPerson.id, name: nextPerson.name });
       this.room.roundStatus = "playing";
       this.room.visibleHints = 1;
       this.room.guesses = [];
@@ -479,13 +521,11 @@ export class RoomDurableObject {
     }
     if (type === "resetLobby") {
       if (this.room.hostId !== playerId) return;
-      const quizIds = shuffle(mockPersons)
-        .filter((person) => person.category === "Testowa")
-        .slice(0, this.room.totalRounds)
-        .map((person) => person.id);
+      const quizIds = await this.loadQuizIds(this.room.totalRounds);
+      if (quizIds.length === 0) return;
 
       this.room.roundStatus = "lobby";
-      this.room.currentPersonId = null;
+      this.room.currentPerson = null;
       this.room.visibleHints = 1;
       this.room.guesses = [];
       this.room.roundStartTime = null;
@@ -551,7 +591,7 @@ export class RoomDurableObject {
       return;
     }
 
-    const person = getPersonById(this.room.currentPersonId);
+    const person = this.room.currentPerson;
     if (!person) return;
 
     if (this.room.lastHintRevealedAt) {
