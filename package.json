@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "dev:workers": "npm run build && npx wrangler dev",
     "postbuild": "node ./scripts/copy-assetsignore.mjs",
     "preview": "astro preview",
     "astro": "astro"

@@ -2,8 +2,23 @@
   "name": "whosthatperson",
   "compatibility_date": "2026-01-31",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "./dist/_worker.js",
+  "main": "./worker.mjs",
   "assets": {
     "directory": "./dist"
-  }
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "ROOM_DO",
+        "class_name": "RoomDurableObject"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["RoomDurableObject"],
+      "deleted_classes": ["LobbyDurableObject"]
+    }
+  ]
 }

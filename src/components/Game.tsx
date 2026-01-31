@@ -378,7 +378,15 @@ export default function Game() {
                       Wzór odpowiedzi
                     </span>
                   )}
-                  <p>{hint}</p>
+                  <p
+                    className={
+                      index === 0
+                        ? "whitespace-pre-wrap font-mono tracking-widest text-slate-100"
+                        : ""
+                    }
+                  >
+                    {hint}
+                  </p>
                 </li>
               ))}
             </ol>
