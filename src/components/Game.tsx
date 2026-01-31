@@ -46,7 +46,9 @@ export default function Game() {
         throw new Error("Nie udało się pobrać osoby.");
       }
       const persons: Person[] = await response.json();
-      const testCategory = persons.filter((person) => person.category === "Testowa");
+      const testCategory = persons.filter(
+        (person) => person.category.toLowerCase() === "testowa"
+      );
       if (testCategory.length < TOTAL_QUESTIONS) {
         throw new Error("Za mało pytań w kategorii Testowa.");
       }

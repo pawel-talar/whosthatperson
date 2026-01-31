@@ -27,7 +27,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const response = await stub.fetch("https://room/init", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ roomId, hostKey })
+    body: JSON.stringify({ roomId, hostKey, category: "mix" })
   });
 
   if (!response.ok) {

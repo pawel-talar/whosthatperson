@@ -22,6 +22,7 @@ type RoomState = {
   hostId: string | null;
   players: Player[];
   roundStatus: "lobby" | "playing" | "roundEnd";
+  selectedCategory: string;
   gameOver: boolean;
   currentRound: number;
   totalRounds: number;
@@ -41,6 +42,8 @@ type Props = {
   roomId: string;
 };
 
+type Category = { code: string; label: string };
+
 const apiBase = import.meta.env.BASE_URL;
 
 export default function Room({ roomId }: Props) {
@@ -49,6 +52,7 @@ export default function Room({ roomId }: Props) {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [isJoining, setIsJoining] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   const socketRef = useRef<WebSocket | null>(null);
   const [now, setNow] = useState(Date.now());
   const [configHintInterval, setConfigHintInterval] = useState(5);
@@ -61,6 +65,25 @@ export default function Room({ roomId }: Props) {
     if (storedName) setName(storedName);
     if (storedPlayerId) setPlayerId(storedPlayerId);
   }, [roomId]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadCategories = async () => {
+      try {
+        const response = await fetch(`${apiBase}api/categories`);
+        if (!response.ok) return;
+        const list: Category[] = await response.json();
+        if (!isMounted) return;
+        setCategories(list);
+      } catch {
+        // ignore
+      }
+    };
+    loadCategories();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
@@ -164,6 +187,10 @@ export default function Room({ roomId }: Props) {
       hintIntervalSec: configHintInterval,
       roundDurationSec: configRoundDuration
     });
+  };
+
+  const setCategory = (category: string) => {
+    send("setCategory", { category });
   };
 
   useEffect(() => {
@@ -370,6 +397,39 @@ export default function Room({ roomId }: Props) {
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {isHost && room.roundStatus === "lobby" && (
+            <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
+                Kategoria rund
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                    room.selectedCategory === "mix"
+                      ? "bg-emerald-400 text-slate-900"
+                      : "border border-slate-700 text-slate-200 hover:border-slate-500"
+                  }`}
+                  onClick={() => setCategory("mix")}
+                >
+                  Mix
+                </button>
+                {categories.map((category) => (
+                  <button
+                    key={category.code}
+                    className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                      room.selectedCategory === category.code
+                        ? "bg-emerald-400 text-slate-900"
+                        : "border border-slate-700 text-slate-200 hover:border-slate-500"
+                    }`}
+                    onClick={() => setCategory(category.code)}
+                  >
+                    {category.label}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 

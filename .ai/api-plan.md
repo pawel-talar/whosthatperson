@@ -13,8 +13,9 @@ Zapewnienie spójnego API REST + WebSocket dla gry.
 ## REST Endpoints
 1. `GET /api/persons`
    - Zwraca wszystkie postacie.
+   - Zawiera listę `categories` powiązanych z osobą.
 2. `GET /api/random-person?category=Testowa`
-   - Zwraca losową postać.
+   - Zwraca losową postać (filtrowanie po `person_category`).
 3. `POST /api/room`
    - Tworzy pokój, zwraca `roomId`, `hostKey`, `inviteUrl`.
 4. `GET /api/room/:id`
@@ -28,6 +29,7 @@ Zapewnienie spójnego API REST + WebSocket dla gry.
 ## Zasady
 - Serwer (DO) jest źródłem prawdy dla punktów i stanu.
 - Klient renderuje stan na podstawie `roomUpdate`.
+- Kategorie w multiplayer są wybierane przez hosta (Mix lub konkretna kategoria).
 
 ## Checklist
 - [ ] Obsługa błędów w API

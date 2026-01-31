@@ -31,17 +31,19 @@
 
 ## Model danych (skrót)
 - `persons`: id, name, category, occupation, hints[]
+- `category`: code, label
+- `person_category`: person_id, category_code
 - `Room` (DO): players, scores, current person, timer, round history
 
 ## API (skrót)
-- `GET /api/persons` — lista postaci
-- `GET /api/random-person?category=Testowa` — losowa postać
+- `GET /api/persons` — lista postaci (z `categories`)
+- `GET /api/random-person?category=testowa` — losowa postać
 - `POST /api/room` — tworzenie lobby
 - `GET /api/room/:id` — stan pokoju
 - `WS /api/room/:id/ws` — realtime multiplayer
 
 ## Dane
-Źródłem prawdy dla osób jest D1. Dane startowe dostarczane są przez migrację SQL.
+Źródłem prawdy dla osób jest D1. Dane startowe dostarczane są przez migracje SQL.
 
 ## Uruchomienie lokalne (skrót)
 1. `npm install`
