@@ -1,4 +1,6 @@
-﻿@tailwind base;
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap");
+
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -11,7 +13,7 @@ body {
 }
 
 .brand-logo {
-  font-family: Papyrus, "Comic Sans MS", "Segoe UI", sans-serif;
+  font-family: "Cinzel", "Space Grotesk", "Segoe UI", serif;
 }
 
 @keyframes input-shake {
@@ -36,3 +38,4 @@ body {
 .shake {
   animation: input-shake 320ms ease-in-out;
 }
+
