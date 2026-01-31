@@ -7,14 +7,20 @@ Utrzymanie danych quizu w Cloudflare D1 oraz spójna migracja schematu i seed da
 
 ## Zakres
 - Tabela `persons` jako źródło prawdy dla quizu.
+- Tabela `category` jako słownik kategorii.
+- Tabela łącząca `person_category` (wiele‑do‑wielu).
 - Migracje SQL (schema + seed).
 - Bez mocków runtime.
 
 ## Kroki implementacji
 1. Utworzenie schematu D1:
    - `migrations/0001_create_persons.sql` z tabelą `persons`.
+   - nowa migracja z tabelą `category`.
+   - nowa migracja z tabelą `person_category`.
 2. Seed danych:
    - `migrations/0002_seed_persons.sql` z rekordami osób.
+   - nowa migracja z rekordami `category` (film, muzyka, nauka, polska, testowa).
+   - migracja z osobami (30 na kategorię, łącznie 150).
 3. Konfiguracja bindingu D1:
    - `wrangler.jsonc` → `d1_databases` + `database_id`.
 4. Typy środowiska:
@@ -26,9 +32,18 @@ Utrzymanie danych quizu w Cloudflare D1 oraz spójna migracja schematu i seed da
 Tabela `persons`:
 - `id` TEXT PRIMARY KEY
 - `name` TEXT NOT NULL
-- `category` TEXT NOT NULL
+- `category` TEXT NOT NULL (FK → `category.code`)
 - `occupation` TEXT NOT NULL
 - `hints` TEXT NOT NULL (JSON array)
+
+Tabela `category`:
+- `code` TEXT PRIMARY KEY
+- `label` TEXT NOT NULL
+
+Tabela `person_category`:
+- `person_id` TEXT NOT NULL (FK → `persons.id`)
+- `category_code` TEXT NOT NULL (FK → `category.code`)
+- PK złożony: (`person_id`, `category_code`)
 
 ## Zasady
 - Migracje są jedynym źródłem danych startowych.

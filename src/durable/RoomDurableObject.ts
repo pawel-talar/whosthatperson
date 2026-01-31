@@ -41,6 +41,7 @@ type RoomState = {
   hostKey: string;
   players: Record<string, Player>;
   roundStatus: RoundStatus;
+  selectedCategory: string;
   currentPerson: PersonData | null;
   visibleHints: number;
   guesses: Guess[];
@@ -62,6 +63,7 @@ type RoomPublic = {
   hostId: string | null;
   players: Player[];
   roundStatus: RoundStatus;
+  selectedCategory: string;
   gameOver: boolean;
   currentRound: number;
   totalRounds: number;
@@ -151,15 +153,22 @@ export class RoomDurableObject {
     return mapRow(row);
   }
 
-  private async loadQuizIds(totalRounds: number) {
+  private async loadQuizIds(totalRounds: number, category: string) {
     const db = this.getDb();
     if (!db) return [];
-    const result = await db
-      .prepare(
-        "SELECT id FROM persons WHERE category = ?1 ORDER BY RANDOM() LIMIT ?2"
-      )
-      .bind("Testowa", totalRounds)
-      .all<{ id: string }>();
+    const normalized = category.toLowerCase();
+    const result =
+      normalized === "mix"
+        ? await db
+            .prepare("SELECT id FROM persons ORDER BY RANDOM() LIMIT ?1")
+            .bind(totalRounds)
+            .all<{ id: string }>()
+        : await db
+            .prepare(
+              "SELECT p.id FROM persons p JOIN person_category pc ON pc.person_id = p.id WHERE pc.category_code = ?1 ORDER BY RANDOM() LIMIT ?2"
+            )
+            .bind(normalized, totalRounds)
+            .all<{ id: string }>();
     return (result.results ?? []).map((row) => row.id);
   }
 
@@ -178,6 +187,7 @@ export class RoomDurableObject {
       hostId: room.hostId,
       players: Object.values(room.players),
       roundStatus: room.roundStatus,
+      selectedCategory: room.selectedCategory,
       gameOver,
       currentRound,
       totalRounds: room.totalRounds,
@@ -272,7 +282,8 @@ export class RoomDurableObject {
       });
     }
 
-    const quizIds = await this.loadQuizIds(totalRounds);
+    const selectedCategory = body?.category?.toString().trim().toLowerCase() || "mix";
+    const quizIds = await this.loadQuizIds(totalRounds, selectedCategory);
     if (quizIds.length === 0) {
       return new Response(JSON.stringify({ error: "No persons found" }), {
         status: 404,
@@ -286,6 +297,7 @@ export class RoomDurableObject {
       hostKey,
       players: {},
       roundStatus: "lobby",
+      selectedCategory,
       currentPerson: null,
       visibleHints: 1,
       guesses: [],
@@ -441,6 +453,22 @@ export class RoomDurableObject {
       return;
     }
 
+    if (type === "setCategory") {
+      if (this.room.hostId !== playerId) return;
+      if (this.room.roundStatus !== "lobby") return;
+      const category = payload.category?.toString().trim().toLowerCase();
+      if (!category) return;
+      this.room.selectedCategory = category;
+      const quizIds = await this.loadQuizIds(this.room.totalRounds, category);
+      if (quizIds.length > 0) {
+        this.room.remainingPersonIds = quizIds;
+      }
+      this.room.roundHistory = [];
+      await this.saveState();
+      this.broadcastRoomUpdate();
+      return;
+    }
+
     if (type === "guess") {
       const answer = payload.answer?.toString().trim();
       if (!answer || this.room.roundStatus !== "playing") return;
@@ -521,7 +549,10 @@ export class RoomDurableObject {
     }
     if (type === "resetLobby") {
       if (this.room.hostId !== playerId) return;
-      const quizIds = await this.loadQuizIds(this.room.totalRounds);
+      const quizIds = await this.loadQuizIds(
+        this.room.totalRounds,
+        this.room.selectedCategory
+      );
       if (quizIds.length === 0) return;
 
       this.room.roundStatus = "lobby";
