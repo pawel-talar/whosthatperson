@@ -6,6 +6,13 @@
   "assets": {
     "directory": "./dist"
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "whosthatperson",
+      "database_id": "de8f3971-517a-4f5b-aae6-848432949b0d"
+    }
+  ],
   "durable_objects": {
     "bindings": [
       {
@@ -17,8 +24,7 @@
   "migrations": [
     {
       "tag": "v2",
-      "new_sqlite_classes": ["RoomDurableObject"],
-      "deleted_classes": ["LobbyDurableObject"]
+      "new_sqlite_classes": ["RoomDurableObject"]
     }
   ]
 }

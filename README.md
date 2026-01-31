@@ -1,7 +1,7 @@
 ﻿# Who's That Person?
 
 MVP prostej gry quizowej zbudowanej w Astro + React + Tailwind.
-Wszystko działa na mockowanych danych w pamięci, bez logowania i bazy danych.
+Dane startowe są seedowane do Cloudflare D1 z migracji SQL.
 
 ## Wymagania
 
@@ -28,13 +28,15 @@ Domyślnie aplikacja działa na http://localhost:4321
 - `src/components/Game.tsx` — logika gry
 - `src/pages/api/persons.ts` — endpoint z listą postaci
 - `src/pages/api/random-person.ts` — endpoint z losową postacią
-- `src/data/mockPersons.ts` — mockowane dane
 - `src/types/person.ts` — typ `Person`
 - `src/styles/global.css` — style globalne + Tailwind
+- `migrations/0001_create_persons.sql` — schemat D1
+- `migrations/0002_seed_persons.sql` — dane startowe do D1
 
 ## Deploy na Cloudflare Workers
 
 Ta aplikacja używa endpointów `/api/*`, więc wymaga trybu server/SSR.
+Upewnij się, że w `wrangler.jsonc` ustawisz poprawne `database_id` dla D1.
 
 1) Zbuduj projekt:
 ```sh
