@@ -9,18 +9,19 @@ Stworzenie gry quizowej „Who’s That Person?” z trybem solo i multiplayer, 
 ### W ramach MVP
 - Singleplayer: 5 pytań, punkty, timer, podpowiedzi.
 - Multiplayer: lobby, wspólne rundy, ranking.
-- Brak kont i logowania.
+- Panel admina dostępny pod `/admin`.
+- Brak kont i logowania dla graczy.
 - Dane w Cloudflare D1.
 
 ### Poza zakresem
 - Zarządzanie użytkownikami i profilami.
-- Admin panel do edycji pytań.
 - Zaawansowane dopasowanie odpowiedzi (fuzzy/NLP).
 
 ## 3. Użytkownicy i przypadki użycia
 - Gracz solo: szybka rozgrywka.
 - Host: tworzy pokój i startuje rundy.
 - Gracz multiplayer: dołącza linkiem i zgaduje w czasie rzeczywistym.
+- Admin: dodaje/usuwa osoby i kategorie.
 
 ## 4. Wymagania funkcjonalne
 ### Singleplayer
@@ -35,10 +36,17 @@ Stworzenie gry quizowej „Who’s That Person?” z trybem solo i multiplayer, 
 - Wspólny stan rundy dla wszystkich graczy.
 - Ranking na koniec gry.
 - Automatyczne kończenie rundy po czasie lub gdy wszyscy odgadną.
+- Wybór kategorii przez hosta (w tym „Mix”).
+
+### Admin
+- Dostęp do `/admin` chroniony przez Cloudflare Access.
+- Dodawanie i usuwanie osób.
+- Dodawanie i usuwanie kategorii.
 
 ### API
 - `GET /api/persons`
-- `GET /api/random-person?category=Testowa`
+- `GET /api/random-person?category=testowa`
+- `GET /api/categories`
 - `POST /api/room`
 - `GET /api/room/:id`
 - `WS /api/room/:id/ws`
@@ -47,6 +55,7 @@ Stworzenie gry quizowej „Who’s That Person?” z trybem solo i multiplayer, 
 - SSR/edge runtime (Workers).
 - Responsywne UI.
 - Spójność stanu multiplayer (źródło prawdy po stronie serwera).
+- Autoryzacja admina realizowana przez Cloudflare Access.
 
 ## 6. Dane i przechowywanie
 - Cloudflare D1 (SQLite).
@@ -60,12 +69,14 @@ Stworzenie gry quizowej „Who’s That Person?” z trybem solo i multiplayer, 
 
 ## 8. Integracje i środowisko
 - Cloudflare Workers + D1 + Durable Objects.
+- Cloudflare Access dla `/admin`.
 - Lokalny dev przez `wrangler dev`.
 
 ## 9. Punkty jakości i ryzyka
 ### Ryzyka
 - Brak fallbacku bez D1.
 - Stabilność WebSocket w środowiskach edge.
+- Zależność od konfiguracji Cloudflare Access dla dostępu do /admin.
 
 ### Kontrola jakości
 - Testy manualne (MVP).

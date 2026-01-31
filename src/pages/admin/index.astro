@@ -1,6 +1,6 @@
 ---
-import "../styles/global.css";
-import GameShell from "../components/GameShell";
+import "../../styles/global.css";
+import AdminDashboard from "../../components/AdminDashboard";
 ---
 
 <html lang="pl">
@@ -16,35 +16,30 @@ import GameShell from "../components/GameShell";
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Who's That Person?</title>
+		<title>Admin — Who's That Person?</title>
 	</head>
 	<body class="min-h-screen bg-slate-950 text-slate-100">
 		<header class="border-b border-slate-800/60 bg-slate-950/80">
-			<div class="mx-auto flex w-full max-w-4xl items-center justify-between px-6 py-4">
+			<div class="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4">
 				<a
 					href="/"
 					class="brand-logo text-2xl tracking-wide text-emerald-200 transition hover:text-emerald-100"
 				>
 					Who's that person?
 				</a>
-				<a
-					href="/admin"
-					class="rounded-full border border-slate-700 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300 transition hover:border-slate-500 hover:text-slate-100"
-				>
-					Zaloguj
-				</a>
+				<span class="text-xs uppercase tracking-[0.2em] text-slate-400">Admin</span>
 			</div>
 		</header>
-		<main class="mx-auto flex w-full max-w-4xl flex-col gap-6 px-6 py-10">
+		<main class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-10">
 			<header class="flex flex-col gap-2">
-				<p class="text-sm uppercase tracking-[0.3em] text-slate-400">Who's That Person?</p>
-				<h1 class="text-3xl font-semibold sm:text-4xl">Zgadnij postać po podpowiedziach</h1>
+				<p class="text-sm uppercase tracking-[0.3em] text-slate-400">Panel administratora</p>
+				<h1 class="text-3xl font-semibold sm:text-4xl">Zarządzaj treścią quizu</h1>
 				<p class="text-slate-300">
-					Prosta gra quizowa — zgaduj znane osoby na podstawie kolejnych podpowiedzi.
+					Dodawaj i usuwaj osoby oraz kategorie dostępne w grze.
 				</p>
 			</header>
 			<section class="rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-xl">
-				<GameShell client:load />
+				<AdminDashboard client:load />
 			</section>
 		</main>
 	</body>

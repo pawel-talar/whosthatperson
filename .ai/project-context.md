@@ -44,6 +44,7 @@
 
 ## Dane
 Źródłem prawdy dla osób jest D1. Dane startowe dostarczane są przez migracje SQL.
+Panel admina jest chroniony przez Cloudflare Access.
 
 ## Uruchomienie lokalne (skrót)
 1. `npm install`
