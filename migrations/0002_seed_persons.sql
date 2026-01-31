@@ -1,4 +1,4 @@
-INSERT INTO persons (id, name, category, occupation, hints) VALUES
+INSERT OR IGNORE INTO persons (id, name, category, occupation, hints) VALUES
 ('einstein', 'Albert Einstein', 'Testowa', 'fizyk teoretyczny', '["Urodził się w Ulm w 1879 roku.","Pracował w urzędzie patentowym w Bernie.","Opisał zjawisko fotoelektryczne.","Sformułował szczególną teorię względności.","Jego nazwisko stało się synonimem geniusza."]'),
 ('curie', 'Maria Skłodowska-Curie', 'Testowa', 'fizyczka i chemiczka', '["Pochodziła z Warszawy.","Pracowała naukowo w Paryżu.","Badała zjawiska promieniotwórczości.","Odkryła pierwiastki polon i rad.","Jest jedyną osobą, która otrzymała Nagrodę Nobla w dwóch różnych dziedzinach nauk ścisłych."]'),
 ('jobs', 'Steve Jobs', 'Testowa', 'przedsiębiorca technologiczny', '["Urodził się w 1955 roku w Kalifornii.","Był współzałożycielem firmy komputerowej.","Został zwolniony z własnej firmy, do której później wrócił.","Stoi za sukcesem popularnego odtwarzacza muzyki i smartfona.","Był twarzą firmy Apple przez wiele lat."]'),
