@@ -1,37 +1,29 @@
-# API Plan
+﻿# API Plan
 
-Data: 2026-01-31
+Data: 2026-02-01
 
-## Cel
-Zapewnienie spójnego API REST + WebSocket dla gry.
+## Public API
+- `GET /api/persons` — lista postaci z kategoriami.
+- `GET /api/random-person?category=...` — losowa postać z kategorii (opcjonalnie).
+- `GET /api/categories` — lista kategorii.
+- `POST /api/room` — tworzy lobby.
+- `GET /api/room/:id` — stan pokoju.
+- `WS /api/room/:id/ws` — realtime multiplayer.
 
-## Zakres
-- Endpointy publiczne do danych quizu.
-- Endpointy do zarządzania pokojami multiplayer.
-- WebSocket do synchronizacji stanu.
+## Admin API (Cloudflare Access)
+- `GET /api/admin/categories`
+- `POST /api/admin/categories`
+- `PUT /api/admin/categories/:code`
+- `DELETE /api/admin/categories/:code`
+- `GET /api/admin/persons?limit=20&offset=0&q=...`
+- `POST /api/admin/persons`
+- `PUT /api/admin/persons/:id`
+- `DELETE /api/admin/persons/:id`
 
-## REST Endpoints
-1. `GET /api/persons`
-   - Zwraca wszystkie postacie.
-   - Zawiera listę `categories` powiązanych z osobą.
-2. `GET /api/random-person?category=Testowa`
-   - Zwraca losową postać (filtrowanie po `person_category`).
-3. `POST /api/room`
-   - Tworzy pokój, zwraca `roomId`, `hostKey`, `inviteUrl`.
-4. `GET /api/room/:id`
-   - Zwraca publiczny stan pokoju.
+## Autoryzacja
+- W produkcji wymagane nagłówki `Cf-Access-*`.
+- Lokalnie Access jest pomijany dla `localhost`/`127.0.0.1`.
 
-## WebSocket
-- `WS /api/room/:id/ws`
-  - Wysyłane zdarzenia: `joinRoom`, `guess`, `startGame`, `nextRound`, `setConfig`, `resetLobby`.
-  - Odbierane zdarzenia: `roomUpdate`, `guessResult`, `joined`.
-
-## Zasady
-- Serwer (DO) jest źródłem prawdy dla punktów i stanu.
-- Klient renderuje stan na podstawie `roomUpdate`.
-- Kategorie w multiplayer są wybierane przez hosta (Mix lub konkretna kategoria).
-
-## Checklist
-- [ ] Obsługa błędów w API
-- [ ] Spójna struktura payloadów
-- [ ] Timeouty i zakończenie rundy w DO
+## Odpowiedzi
+- Listy zwracają JSON z polami `items`, `total`, `limit`, `offset`.
+- Walidacja payloadów po stronie serwera (min. 3 hinty, min. 1 kategoria).

@@ -7,7 +7,7 @@ on:
     branches-ignore: ["main"]
 
 jobs:
-  build-and-audit:
+  test:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -27,5 +27,37 @@ jobs:
       - name: Build (check)
         run: npm run build
 
+      - name: Unit tests
+        run: npm run test
+
       - name: Vulnerability scan
         run: npm audit --omit=dev
+
+  e2e:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (check)
+        run: npm run build
+
+      - name: Apply D1 migrations (local)
+        run: npm run d1:apply:local
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: E2E tests
+        run: npm run test:e2e

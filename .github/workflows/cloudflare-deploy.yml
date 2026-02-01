@@ -25,6 +25,18 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Unit tests
+        run: npm run test
+
+      - name: Apply D1 migrations (local)
+        run: npm run d1:apply:local
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: E2E tests
+        run: npm run test:e2e
+
       - name: Apply D1 migrations
         run: npm run d1:apply
         env:

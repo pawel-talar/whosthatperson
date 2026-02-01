@@ -1,18 +1,16 @@
-# ADR 0009: Dostęp do panelu admina przez Cloudflare Access
+﻿# ADR 0009: Admin Access
 
-Data: 2026-01-31
+## Status
+Accepted
 
-## Kontekst
-Panel `/admin` wymaga uwierzytelnienia bez budowania własnego systemu logowania.
+## Context
+Panel admina wymaga ochrony na produkcji. Projekt działa na Cloudflare Workers.
 
-## Decyzja
-Wykorzystujemy Cloudflare Access do ochrony ścieżki `/admin`.
+## Decision
+- Chronimy `/admin` oraz `/api/admin/*` przez Cloudflare Access.
+- W lokalnym środowisku Access jest pomijany dla `localhost`/`127.0.0.1`.
+- Wylogowanie przez `/cdn-cgi/access/logout`.
 
-## Uzasadnienie
-- Brak przechowywania haseł w aplikacji.
-- Szybka konfiguracja i gotowe IdP.
-- Dostęp kontrolowany na poziomie edge.
-
-## Konsekwencje
-- Konfiguracja Access jest poza repozytorium.
-- Dostęp do `/admin` wymaga aktywnego konta w IdP.
+## Consequences
+- Dostęp do admina zależy od poprawnej konfiguracji Access.
+- Brak nagłówków `Cf-Access-*` w produkcji skutkuje 401.

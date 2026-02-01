@@ -1,32 +1,16 @@
-# CI/CD Plan
+﻿# CI/CD Plan
 
-Data: 2026-01-31
+Data: 2026-02-01
 
-## Cel
-Automatyzacja walidacji kodu i deployu na Cloudflare.
+## CI
+- Workflow `ci.yml` uruchamiany na PR i push (poza main).
+- Kroki: install -> build -> npm audit.
 
-## CI (weryfikacja jakości)
-- Trigger: PR do `main` oraz push na inne branche.
-- Kroki:
-  - `npm ci`
-  - `npm run build`
-  - `npm audit --omit=dev`
-
-## CD (deploy)
-- Trigger: push na `main`.
-- Kroki:
-  - `npm ci`
-  - `npm run build`
-  - `wrangler d1 migrations apply whosthatperson --remote`
-  - `wrangler deploy`
+## CD
+- Workflow `cloudflare-deploy.yml` na gałęzi `main`.
+- Kroki: install -> build -> migracje D1 (remote) -> deploy Worker.
 
 ## Sekrety
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
-
-## Access
-- Panel `/admin` chroniony przez Cloudflare Access (konfiguracja poza CI).
-
-## Uwagi
-- Migracje D1 muszą być idempotentne.
-- Brak deployu z PR (tylko `main`).
+- `CLOUDFLARE_DATABASE_ID` (jeśli wymagane w configu)
