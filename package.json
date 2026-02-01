@@ -6,6 +6,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "dev:workers": "npm run build && npx wrangler dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test --config playwright.config.mjs",
     "d1:apply": "npx wrangler d1 migrations apply whosthatperson --remote",
     "d1:apply:local": "npx wrangler d1 migrations apply whosthatperson --local",
     "postbuild": "node ./scripts/copy-assetsignore.mjs",
@@ -22,9 +25,11 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
+    "@playwright/test": "^1.49.1",
     "miniflare": "^4.20260128.0",
     "postcss": "^8.5.1",
     "tailwindcss": "^3.4.17",
+    "vitest": "^1.6.0",
     "wrangler": "^4.61.1"
   },
   "overrides": {

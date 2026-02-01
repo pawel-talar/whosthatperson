@@ -1,37 +1,29 @@
-# UI Plan
+﻿# UI Plan
 
-Data: 2026-01-31
+Data: 2026-02-01
 
-## Cel
-Spójny i czytelny interfejs dla trybu solo i multiplayer.
+## Widoki
+1) Strona główna
+- CTA do gry.
+- Branding „Who’s that person?”.
 
-## Zakres
-- Strona główna z wyborem trybu.
-- Tryb solo (quiz, timer, punkty, podsumowanie).
-- Tryb multiplayer (lobby, runda, ranking, koniec gry).
+2) Multiplayer lobby
+- Lista graczy.
+- Ustawienia hosta (kategoria, auto-hinty).
+- Link do zaproszenia.
 
-## Kroki implementacji
-1. Strona główna:
-   - `GameShell.tsx`: wybór trybu, wyróżnienie multiplayer.
-2. Singleplayer:
-   - `Game.tsx`: wyświetlanie hintów, input, punktacja, timer.
-   - Podsumowanie z listą haseł i punktów.
-3. Multiplayer:
-   - `Room.tsx`: lobby, start gry, ranking z lewej, runda z hintami.
-   - Widok końcowy: ranking + powrót do lobby (host).
-4. Maskowanie:
-   - W UI pierwsza podpowiedź w monospace z zachowaniem spacji.
-5. Responsywność:
-   - Gridy dla desktopu, stack dla mobile.
+3) Rozgrywka multiplayer
+- Hinty, input odpowiedzi, ranking.
+- Licznik rundy + pasek czasu.
+- Koniec gry: ranking + powrót do lobby.
 
-## Wytyczne UX
-- Statusy i komunikaty czytelne (błędy, poprawne odpowiedzi).
-- Wysoki kontrast i duże CTA.
-- Timer jako pasek postępu.
+4) Admin panel `/admin`
+- Nagłówek z nazwą serwisu i przyciskiem „Wyloguj”.
+- Sekcja kategorii: dodawanie, edycja, usuwanie.
+- Sekcja osób: dodawanie, edycja, usuwanie.
+- Lista osób: paginacja i wyszukiwarka.
 
-## Checklist
-- [ ] Widok wyboru trybu
-- [ ] Widok gry solo
-- [ ] Widok lobby multiplayer
-- [ ] Widok rundy multiplayer
-- [ ] Widok końca gry multiplayer
+## Spójność stylu
+- Tailwind CSS.
+- Brand logo z webfontem Cinzel.
+- Ciemna kolorystyka (slate/emerald).

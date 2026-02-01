@@ -1,6 +1,6 @@
 ﻿# Who's That Person?
 
-MVP prostej gry quizowej zbudowanej w Astro + React + Tailwind.
+MVP gry quizowej zbudowanej w Astro + React + Tailwind.
 Dane startowe są seedowane do Cloudflare D1 z migracji SQL.
 
 ## Wymagania
@@ -8,7 +8,7 @@ Dane startowe są seedowane do Cloudflare D1 z migracji SQL.
 - Node.js >= 18.20.8 (Astro 5 wymaga nowszej wersji niż 18.16)
 - npm
 
-## Uruchomienie
+## Uruchomienie lokalne
 
 ```sh
 npm install
@@ -18,8 +18,23 @@ npm run dev:workers
 
 Domyślnie aplikacja działa na http://localhost:4321 (przez Workers).
 
+## Panel admina
+
+- Panel działa pod `/admin`.
+- API admina działa pod `/api/admin/*`.
+- Produkcja wymaga Cloudflare Access (nagłówki `Cf-Access-*`).
+- Lokalnie Access jest pomijany dla `localhost`/`127.0.0.1`.
+- Wylogowanie: `GET /cdn-cgi/access/logout`.
+
+### Troubleshooting Cloudflare Access
+
+- 401 na produkcji: upewnij się, że Access chroni zarówno `/admin*`, jak i `/api/admin*`.
+- Brak nagłówków `Cf-Access-*`: sprawdź, czy żądanie przechodzi przez Access (Network → Headers).
+- Pętla przekierowań: usuń cookies, wyłącz blokowanie ciasteczek lub użyj własnej domeny zamiast `workers.dev`.
+
 ## Endpointy API
 
+Public:
 - `GET /api/persons` — lista wszystkich postaci (z `categories`)
 - `GET /api/random-person?category=testowa` — losowa postać (kategoria opcjonalna)
 - `GET /api/categories` — lista kategorii
@@ -27,13 +42,26 @@ Domyślnie aplikacja działa na http://localhost:4321 (przez Workers).
 - `GET /api/room/:id` — stan pokoju
 - `WS /api/room/:id/ws` — realtime multiplayer
 
+Admin (chronione Access):
+- `GET /api/admin/categories`
+- `POST /api/admin/categories`
+- `PUT /api/admin/categories/:code`
+- `DELETE /api/admin/categories/:code`
+- `GET /api/admin/persons?limit=20&offset=0&q=...`
+- `POST /api/admin/persons`
+- `PUT /api/admin/persons/:id`
+- `DELETE /api/admin/persons/:id`
+
 ## Struktura
 
 - `src/pages/index.astro` — strona główna z osadzonym komponentem React
 - `src/components/Game.tsx` — logika gry
+- `src/pages/admin/index.astro` — widok panelu admina
+- `src/components/AdminDashboard.tsx` — UI admina
 - `src/pages/api/persons.ts` — endpoint z listą postaci
 - `src/pages/api/random-person.ts` — endpoint z losową postacią
 - `src/pages/api/categories.ts` — endpoint z kategoriami
+- `src/pages/api/admin/*` — API admina (CRUD)
 - `src/types/person.ts` — typ `Person`
 - `src/styles/global.css` — style globalne + Tailwind
 - `migrations/0001_create_persons.sql` — schemat D1
@@ -41,7 +69,7 @@ Domyślnie aplikacja działa na http://localhost:4321 (przez Workers).
 - `migrations/0003_seed_film_persons.sql` — dane filmowe
 - `migrations/0004_add_category_table.sql` — tabela kategorii + FK
 - `migrations/0005_seed_real_persons.sql` — dane realnych osób (30/kategoria)
-- `migrations/0006_add_person_categories.sql` — relacja wiele‑do‑wielu
+- `migrations/0006_add_person_categories.sql` — relacja wiele-do-wielu
 - `migrations/0007_expand_hints_to_5.sql` — rozbudowa hintów do 5
 - `.ai/` — dokumentacja projektu (ADR, PDR, kontekst)
 
@@ -54,11 +82,11 @@ Upewnij się, że w `wrangler.jsonc` ustawisz poprawne `database_id` dla D1.
 ```sh
 npm run d1:apply
 ```
-1) Zbuduj projekt:
+2) Zbuduj projekt:
 ```sh
 npm run build
 ```
-2) Zdeployuj worker:
+3) Zdeployuj worker:
 ```sh
 npx wrangler deploy
 ```
