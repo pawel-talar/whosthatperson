@@ -1,7 +1,8 @@
 ﻿# Who's That Person?
 
-MVP gry quizowej zbudowanej w Astro + React + Tailwind.
-Dane startowe są seedowane do Cloudflare D1 z migracji SQL.
+Przeglądarkowa gra quizowa, w której gracze zgadują znane osoby na podstawie kolejnych podpowiedzi.
+Projekt zawiera tryb singleplayer i multiplayer (lobby + wspólne rundy) oraz panel admina do zarządzania osobami i kategoriami.
+Całość działa na Cloudflare Workers (SSR) z bazą D1 i Durable Objects dla realtime.
 
 ## Wymagania
 
@@ -16,7 +17,24 @@ npm run d1:apply:local
 npm run dev:workers
 ```
 
-Domyślnie aplikacja działa na http://localhost:4321 (przez Workers).
+`npm run dev` uruchamia Astro dev server.
+`npm run dev:workers` uruchamia build + `wrangler dev` (SSR).
+
+Domyślny adres: http://localhost:4321.
+
+## Testy
+
+```sh
+npm run test
+npm run test:e2e
+```
+
+- `npm run test` — unit + testy API (Vitest).
+- `npm run test:e2e` — Playwright, uruchamia lokalny `wrangler dev --local` i stosuje migracje D1.
+
+## AI usage
+
+W trakcie pracy wykorzystywałem asystenta AI (ChatGPT/Codex) do planowania, refaktoryzacji, generowania testów oraz weryfikacji rozwiązań.
 
 ## Panel admina
 
