@@ -10,7 +10,7 @@ export default defineConfig({
     trace: "on-first-retry"
   },
   webServer: {
-    command: "npx wrangler dev --local --port 4321",
+    command: "npm run e2e:server",
     url: "http://localhost:4321",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000

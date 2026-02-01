@@ -60,12 +60,14 @@ export default function GameShell() {
 
         <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
           <input
+            data-testid="multiplayer-name"
             value={name}
             onChange={(event) => setName(event.target.value)}
             placeholder="Twój nick"
             className="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-3 text-base text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none"
           />
           <button
+            data-testid="multiplayer-create"
             className="rounded-xl bg-emerald-400 px-6 py-3 text-base font-semibold text-slate-900 transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-60"
             onClick={createRoom}
             disabled={isCreating}
@@ -99,6 +101,7 @@ export default function GameShell() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <button
+          data-testid="mode-solo"
           className="rounded-2xl border border-emerald-400/60 bg-emerald-500/10 px-6 py-5 text-left text-emerald-100 transition hover:border-emerald-300 hover:bg-emerald-500/20"
           onClick={() => setMode("solo")}
         >
@@ -110,6 +113,7 @@ export default function GameShell() {
         </button>
 
         <button
+          data-testid="mode-multiplayer"
           className="relative rounded-2xl border border-amber-400/70 bg-gradient-to-br from-amber-500/20 via-amber-400/10 to-slate-900/40 px-6 py-5 text-left text-amber-100 shadow-lg shadow-amber-500/10 transition hover:border-amber-300 hover:shadow-amber-500/20"
           onClick={() => setMode("multiplayer")}
         >

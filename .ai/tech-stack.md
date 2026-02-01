@@ -7,4 +7,6 @@
 - Cloudflare Durable Objects (multiplayer)
 - Cloudflare D1 (SQLite)
 - Wrangler 4
+- Vitest (unit tests)
+- Playwright (E2E tests)
 - Webfont: Cinzel (brand)

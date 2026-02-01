@@ -266,6 +266,7 @@ export default function Game() {
 
       {status === "idle" && (
         <button
+          data-testid="singleplayer-start"
           className="w-full rounded-xl bg-emerald-400 px-6 py-3 text-base font-semibold text-slate-900 transition hover:bg-emerald-300"
           onClick={startGame}
           disabled={isLoading}

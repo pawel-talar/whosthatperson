@@ -9,6 +9,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test --config playwright.config.mjs",
+    "e2e:server": "npm run d1:apply:local && npx wrangler dev --local --port 4321",
     "d1:apply": "npx wrangler d1 migrations apply whosthatperson --remote",
     "d1:apply:local": "npx wrangler d1 migrations apply whosthatperson --local",
     "postbuild": "node ./scripts/copy-assetsignore.mjs",
