@@ -81,7 +81,7 @@ Stworzenie gry quizowej „Who’s That Person?” z trybem solo i multiplayer, 
 - Błędy konfiguracji D1 (database_id).
 
 ### Kontrola jakości
-- Testy manualne (MVP).
+- Testy automatyczne w CI (Vitest + Playwright).
 - Walidacja punktacji po stronie serwera.
 
 ## 10. Uruchomienie i deploy (skrót)

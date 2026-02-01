@@ -19,3 +19,4 @@ Data: 2026-02-01
 ## Użycie
 - Publiczne API korzysta z kategorii.
 - Admin CRUD zapisuje osoby i przypisania kategorii.
+- E2E uruchamia migracje lokalne przed testami.

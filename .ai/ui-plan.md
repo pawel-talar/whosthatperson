@@ -6,6 +6,7 @@ Data: 2026-02-01
 1) Strona główna
 - CTA do gry.
 - Branding „Who’s that person?”.
+- Wybór trybu: solo lub multiplayer.
 
 2) Multiplayer lobby
 - Lista graczy.
@@ -27,3 +28,4 @@ Data: 2026-02-01
 - Tailwind CSS.
 - Brand logo z webfontem Cinzel.
 - Ciemna kolorystyka (slate/emerald).
+- Data-testid dla kluczowych przycisków E2E.

@@ -19,8 +19,8 @@ Do dodania:
 - `RoomDurableObject` — logika końca rundy po czasie, naliczanie punktów, wybór kategorii.
 - `admin payload validation` — minimalna liczba hintów, min. 1 kategoria.
 
-### 3) Testy API (Playwright lub supertest)
-Zaimplementowane (Vitest, mock DB):
+### 3) Testy API (Vitest, mock DB)
+Zaimplementowane:
 - `GET /api/categories` → 200 + lista.
 - `GET /api/random-person?category=film` → 200 + person z category=film.
 
@@ -30,11 +30,12 @@ Do dodania:
 ### 4) Testy E2E (Playwright)
 Zaimplementowane:
 - Home: ładowanie strony głównej.
-- Admin: ładowanie panelu admina.
+- Singleplayer: wejście na stronę, wybór trybu solo, start quizu i potwierdzenie uruchomienia rundy.
+- Multiplayer: wybór trybu, utworzenie lobby i przejście do `/room/:id`.
 
 Do dodania:
 - Admin: dodanie kategorii i osoby, potem edycja i usunięcie.
-- Multiplayer: utworzenie lobby, join 2 graczy, start rundy, poprawna odpowiedź → ranking.
+- Multiplayer: join 2 graczy, start rundy, poprawna odpowiedź → ranking.
 
 ## GitHub Actions
 
@@ -42,16 +43,17 @@ Do dodania:
 - Install dependencies
 - Build
 - Unit tests (Vitest)
-- API tests (node)
+- E2E tests (Playwright)
+- npm audit
 
 ### Workflow Deploy (main)
 - Install dependencies
 - Build
 - Unit tests (Vitest)
-- API tests (node)
+- E2E tests (Playwright)
 - D1 migrations (remote)
 - Deploy worker
 
 ## Uwagi
-- Dla testów API i E2E w CI potrzebny jest tryb local (wrangler dev / miniflare).
+- E2E uruchamia `wrangler dev --local` i aplikuje lokalne migracje D1.
 - Dla Access używać DEV bypass lub mockować nagłówki.
